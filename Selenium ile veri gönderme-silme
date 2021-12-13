@@ -83,3 +83,5 @@ def sil():
         time.sleep(1.5)
     return buton;
 veri_gonder()
+#ya da 
+sil()
