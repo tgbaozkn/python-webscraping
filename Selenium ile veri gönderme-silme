@@ -19,8 +19,8 @@ source = BeautifulSoup(r.content,"lxml") #okuma bicimi olarak xml kullan
 driver = webdriver.Chrome(ChromeDriverManager().install())#web sürücüsünün nerede oldugu
 driver.get(websitesi) #web sürücüsü bu siteyi okusun 
 
-driver.find_element_by_id("loginForm:username").send_keys("tugba.ozkan")
-driver.find_element_by_id("loginForm:password").send_keys("Monterrey95.")
+driver.find_element_by_id("loginForm:username").send_keys("username")
+driver.find_element_by_id("loginForm:password").send_keys("password")
 driver.find_element_by_id("loginForm:btnLogin").click()
 time.sleep(1.5)
 
