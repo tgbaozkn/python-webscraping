@@ -1,0 +1,87 @@
+import requests #istek kutuphanesi
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.keys import Keys # selenium kutuphanesinden kullanılabilecek anahtarlar
+from bs4 import BeautifulSoup #html okuyan kutuphane
+import pandas as pd  # dosya islemleri icin pandas kutuphanesi
+import datetime #tarih kutphanesi
+import time #zaman aralıkları atmak için zaman kuphanesi 
+from openpyxl import load_workbook
+import numpy as np
+import xlrd
+websitesi= "https://ytbs.teias.gov.tr/ytbs/YTBSAnaSayfa.jsf"
+r = requests.get(websitesi) #websitesini oku 
+source = BeautifulSoup(r.content,"lxml") #okuma bicimi olarak xml kullan
+driver = webdriver.Chrome(ChromeDriverManager().install())#web sürücüsünün nerede oldugu
+driver.get(websitesi) #web sürücüsü bu siteyi okusun 
+
+driver.find_element_by_id("loginForm:username").send_keys("tugba.ozkan")
+driver.find_element_by_id("loginForm:password").send_keys("Monterrey95.")
+driver.find_element_by_id("loginForm:btnLogin").click()
+time.sleep(1.5)
+
+driver.find_element_by_id("form:formTable:j_idt51:2:j_idt53").click()
+driver.find_element_by_id("veriGirisForm:tarih").click()
+driver.find_element_by_id("veriGirisForm:tarih").click()
+driver.find_element_by_id("veriGirisForm:tarih_input").clear()
+driver.find_element_by_id("veriGirisForm:tarih_input").send_keys("2021-12-12")
+driver.find_element_by_id("veriGirisForm:sorgula").click()
+time.sleep(2)
+driver.find_element_by_id("veriGirisForm:merkezKodu").click()
+driver.find_element_by_id("veriGirisForm:merkezKodu_filter").click()
+driver.find_element_by_id("veriGirisForm:merkezKodu_filter").send_keys("h")
+time.sleep(1)
+driver.find_element_by_id("veriGirisForm:merkezKodu_items").click()
+time.sleep(1)
+driver.find_element_by_id("veriGirisForm:sorgula").click()
+time.sleep(1)
+
+
+path="saatlik.xlsx"
+book = xlrd.open_workbook(path)
+sheet = book.sheet_by_index(0)
+sheet.cell_value(0, 0)
+##--
+def veri_gonder():
+    path="saatlik.xlsx"
+    book = xlrd.open_workbook(path)
+    sheet = book.sheet_by_index(0)
+    sheet.cell_value(0, 0)
+    
+    for i in range(49,0,-1):
+                time.sleep(0.75)
+                value_s=sheet.row_values(i)[0]
+                if(type(value_s)==str):
+                    b=str(sheet.row_values(i)[1]).replace(".",",")
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:j_idt148_input").send_keys(b)
+                    time.sleep(0.5)
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:ekle").click()
+                    time.sleep(0.75)
+                if(type(value_s)!=str):
+                    a=str(sheet.row_values(i)[0]).replace(".",",")
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:j_idt146_input").send_keys(a)
+                    time.sleep(0.5)
+                    b=str(sheet.row_values(i)[1]).replace(".",",")
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:j_idt148_input").send_keys(b)
+                    time.sleep(0.5)
+                    c=str(sheet.row_values(i)[2]).replace(".",",")
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:j_idt150_input").send_keys(c)
+                    time.sleep(0.5)
+                    driver.find_element_by_id("veriGirisForm:dtVeriGiris:ekle").click()
+                    time.sleep(0.75)
+    return sheet;
+def sil(): 
+    buton = driver.find_element_by_id("veriGirisForm:dtVeriGiris:0:sil")
+    for i in range(0,50):
+        buton = driver.find_element_by_id("veriGirisForm:dtVeriGiris:0:sil")
+        buton.click()
+        driver.find_element_by_id("j_idt69").click()
+        time.sleep(1.5)
+    return buton;
+veri_gonder()
+#ya da
+sil()
